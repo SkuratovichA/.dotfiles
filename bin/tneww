@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# This script creates a new tmux window and opens nvim in the nearest directory of the selected file or directory.
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: $0 <directory-to-search>"
+    exit 1
+fi
+
+SEARCH_DIR=$1
+
+# Use find command to search for directories and files and use fzf to allow the user to select one
+selected=$(find "$SEARCH_DIR" -mindepth 1 -type d -o -type f -name node_modules -prune -o -print | fzf)
+
+if [[ -z $selected ]]; then
+    echo "No file or directory selected. Exiting."
+    exit 0
+fi
+
+# Determine if the selected item is a file or directory
+if [[ -d $selected ]]; then
+    selected_dir=$selected
+elif [[ -f $selected ]]; then
+    selected_dir=$(dirname "$selected")
+fi
+
+selected_name=$(basename "$selected_dir" | tr . _)
+
+# Check if we are currently inside a tmux session
+if [[ -n $TMUX ]]; then
+    # Inside tmux session, create a new window
+    tmux neww -n "$selected_name" -c "$selected_dir"
+    tmux send-keys -t "$selected_name" "nvim ${selected}" Enter
+else
+    echo "NOt supported to run outside tmux session yet"
+    # # Not inside tmux session, check if tmux is running and if not, start a new session
+    # if ! pgrep -x tmux > /dev/null; then
+    #     tmux new-session -s "$selected_name" -c "$selected_dir" -d
+    #     tmux send-keys -t "$selected_name" 'nvim .' Enter
+    #     tmux attach-session -t "$selected_name"
+    #     exit 0
+    # fi
+    #
+    # # If tmux is running but no session with the desired name, create a new detached session
+    # if ! tmux has-session -t="$selected_name" 2> /dev/null; then
+    #     tmux new-session -s "$selected_name" -c "$selected_dir" -d
+    #     tmux send-keys -t "$selected_name" 'nvim .' Enter
+    # fi
+    #
+    # # Switch to the session with the name
+    # tmux switch-client -t "$selected_name"
+fi

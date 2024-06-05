@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Function to check if an array contains a value
+contains_ext() {
+  local e match="$1"
+  for e in "${ext_array[@]}"; do [[ "$e" == "$match" ]] && return 0; done
+  return 1
+}
+
+# Function to extract file extension
+get_extension() {
+  echo "${1##*.}"
+}
+
+# Initialize an empty string for the extensions filter
+extensions=""
+
+# Usage message for incorrect input
+usage() {
+  echo "Usage: $0 -e \"ext1,ext2,...\" [directory]"
+  exit 1
+}
+
+# Process command-line options
+while getopts ":e:" opt; do
+  case $opt in
+    e) extensions=$OPTARG ;;
+    \?) usage ;;
+  esac
+done
+
+# Shift getopts processed options away
+shift $((OPTIND -1))
+
+# Optional directory path
+dir=${1:-"."}
+
+# Check if extensions are provided
+if [[ -z "$extensions" ]]; then
+    echo "Error: No extensions provided."
+    usage
+fi
+
+# Convert comma-separated list of extensions into an array
+IFS=',' read -r -a ext_array <<< "$extensions"
+
+# Find all files with the given extensions excluding node_modules and build directories
+find "$dir" -type f ! -path "*/node_modules/*" ! -path "*/build/*" | while read -r file; do
+    extension=$(get_extension "$file")
+
+    if contains_ext "$extension"; then
+        # Check if the file is not a binary (to avoid reading image or binary data)
+        if ! file "$file" | grep -qE 'binary|image|audio|video|x-executable|compressed|zip'; then
+            echo "$file"
+            echo "\`\`\`$extension"
+            cat "$file"
+            echo "\`\`\`"
+            echo -e ""
+        fi
+    fi
+done
