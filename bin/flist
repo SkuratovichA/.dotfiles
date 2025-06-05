@@ -1,61 +1,59 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-# Function to check if an array contains a value
-contains_ext() {
-  local e match="$1"
-  for e in "${ext_array[@]}"; do [[ "$e" == "$match" ]] && return 0; done
-  return 1
-}
+import os
+import sys
+import argparse
+import re
 
-# Function to extract file extension
-get_extension() {
-  echo "${1##*.}"
-}
+# Function to check if a file matches any of the specified patterns
+def match_pattern(file, patterns):
+    for pattern in patterns:
+        if re.search(pattern, file):
+            return True
+    return False
 
-# Initialize an empty string for the extensions filter
-extensions=""
+# Function to process a target (directory or file)
+def process_target(target, patterns, exclude_patterns):
 
-# Usage message for incorrect input
-usage() {
-  echo "Usage: $0 -e \"ext1,ext2,...\" [directory]"
-  exit 1
-}
+    exclude_patterns += ["__pycache__"]
+    if os.path.isdir(target):
+        # Process files in the directory
+        for root, dirs, files in os.walk(target):
+            # Exclude directories that match the exclude patterns
+            dirs[:] = [d for d in dirs if not match_pattern(os.path.join(root, d), exclude_patterns)]
+            for file in files:
+                file_path = os.path.join(root, file)
+                # Exclude files that match the exclude patterns
+                if not match_pattern(file_path, exclude_patterns) and match_pattern(file_path, patterns):
+                    # Check if the file is not a binary
+                    if not re.search(r'binary|image|audio|video|x-executable|compressed|zip|ico', os.popen(f'file "{file_path}"').read()):
+                        print(file_path)
+                        print(f"```{os.path.splitext(file_path)[1][1:]}")
+                        with open(file_path, 'r') as f:
+                            print(f.read().strip())
+                        print("```")
+                        print("")
+    elif os.path.isfile(target):
+        # Process single file
+        if not match_pattern(target, exclude_patterns) and match_pattern(target, patterns):
+            # Check if the file is not a binary
+            if not re.search(r'binary|image|audio|video|x-executable|compressed|zip', os.popen(f'file "{target}"').read()):
+                print(target)
+                print(f"```{os.path.splitext(target)[1][1:]}")
+                with open(target, 'r') as f:
+                    print(f.read())
+                print("```")
+                print("")
+    else:
+        print(f"Error: Invalid target '{target}'")
 
-# Process command-line options
-while getopts ":e:" opt; do
-  case $opt in
-    e) extensions=$OPTARG ;;
-    \?) usage ;;
-  esac
-done
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description='Process files based on targets and patterns.')
+parser.add_argument('-t', '--targets', nargs='+', default=['.'], help='Target directories or files (default: current directory)')
+parser.add_argument('-p', '--patterns', nargs='+', default=['.*'], help='Regex patterns for file matching (default: match all files)')
+parser.add_argument('-e', '--exclude', nargs='+', default=[], help='Regex patterns for excluding files or directories')
+args = parser.parse_args()
 
-# Shift getopts processed options away
-shift $((OPTIND -1))
-
-# Optional directory path
-dir=${1:-"."}
-
-# Check if extensions are provided
-if [[ -z "$extensions" ]]; then
-    echo "Error: No extensions provided."
-    usage
-fi
-
-# Convert comma-separated list of extensions into an array
-IFS=',' read -r -a ext_array <<< "$extensions"
-
-# Find all files with the given extensions excluding node_modules and build directories
-find "$dir" -type f ! -path "*/node_modules/*" ! -path "*/build/*" | while read -r file; do
-    extension=$(get_extension "$file")
-
-    if contains_ext "$extension"; then
-        # Check if the file is not a binary (to avoid reading image or binary data)
-        if ! file "$file" | grep -qE 'binary|image|audio|video|x-executable|compressed|zip'; then
-            echo "$file"
-            echo "\`\`\`$extension"
-            cat "$file"
-            echo "\`\`\`"
-            echo -e ""
-        fi
-    fi
-done
+# Process each target
+for target in args.targets:
+    process_target(target, args.patterns, args.exclude)
