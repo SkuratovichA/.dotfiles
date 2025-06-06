@@ -29,18 +29,31 @@ return {
     config = function()
       require("which-key").setup({
         layout = {
-          height = { min = 4, max = 25 },
-          width = { min = 20, max = 50 },
-          spacing = 3,
-          align = "center",
+          -- height = 50,
+          spacing = 4,
+          align = "left",
+          border = "rounded",
         },
+        preset = "helix",
+
+        -- width = 0.9,
+        -- height = { min = 4, max = 25 },
+        -- col = 0.5,
+        -- row = -1,
+        -- title = true,
+        -- title_pos = "center",
+
         window = {
           border = "rounded",
           position = "bottom",
           margin = { 1, 0, 1, 0 },
-          padding = { 2, 2, 2, 2 },
+          padding = { 4, 4, 4, 4 },
           winblend = 0
         },
+        -- keys = {
+        --   scroll_down = '',
+        --   scroll_up = ''
+        -- }
         show_help = true,
         show_keys = true,
       })
