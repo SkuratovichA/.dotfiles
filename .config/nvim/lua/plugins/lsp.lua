@@ -24,7 +24,7 @@ return {
       require("mason-lspconfig").setup({
         ensure_installed = {
           "lua_ls",
-          "tsserver",
+          "ts_ls",  -- Changed from tsserver to ts_ls
           "pyright",
           "phpactor",
           "html",
@@ -70,7 +70,7 @@ return {
             },
           },
         },
-        tsserver = {},
+        ts_ls = {},  -- Changed from tsserver to ts_ls
         pyright = {},
         phpactor = {},
         html = {},
