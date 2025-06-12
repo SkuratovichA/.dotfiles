@@ -1,0 +1,190 @@
+" Leader key
+let mapleader = " "
+
+" ========================================
+" Options from options.lua
+" ========================================
+set number
+set relativenumber
+set ignorecase
+set smartcase
+set hlsearch
+set incsearch
+set scrolloff=8
+set sidescrolloff=8
+set clipboard=unnamedplus
+set showmode
+
+" IdeaVim specific settings
+set ideajoin
+set ideastatusicon=gray
+set idearefactormode=keep
+
+" ========================================
+" Keymaps from keymaps.lua
+" ========================================
+
+" Better movement (gj/gk for wrapped lines)
+nmap j gj
+nmap k gk
+vmap j gj
+vmap k gk
+
+" Window navigation (using IDE actions)
+nmap <C-h> <C-w>h
+nmap <C-j> <C-w>j
+nmap <C-k> <C-w>k
+nmap <C-l> <C-w>l
+
+" Buffer (tab) navigation
+nmap <S-h> :action PreviousTab<CR>
+nmap <S-l> :action NextTab<CR>
+nmap <leader>bd :action CloseContent<CR>
+
+" Clear search highlight
+nmap <Esc> :nohlsearch<CR>
+
+" Better indenting (keep selection)
+vmap < <gv
+vmap > >gv
+
+" Window splits
+nmap <leader>- :action SplitHorizontally<CR>
+nmap <leader>| :action SplitVertically<CR>
+
+" Quit
+nmap <leader>qq :action Exit<CR>
+
+" ========================================
+" Git keymaps (using IDE actions)
+" ========================================
+nmap <leader>gs :action Vcs.Show.Local.Changes<CR>
+nmap <leader>gd :action Compare.LastVersion<CR>
+nmap <leader>gh :action Vcs.ShowTabbedFileHistory<CR>
+nmap <leader>gb :action Annotate<CR>
+nmap <leader>gB :action Annotate<CR>
+
+" ========================================
+" Code formatting and refactoring
+" ========================================
+nmap <leader>cf :action ReformatCode<CR>
+vmap <leader>cf :action ReformatCode<CR>
+
+" ========================================
+" LSP-like mappings (using IDE actions)
+" ========================================
+nmap <leader>la :action ShowIntentionActions<CR>
+nmap <leader>lr :action RenameElement<CR>
+nmap <leader>lf :action FindUsages<CR>
+nmap <leader>lo :action FileStructurePopup<CR>
+nmap <leader>ld :action QuickImplementations<CR>
+nmap <leader>lD :action GotoDeclaration<CR>
+
+" Organize imports
+nmap <leader>oi :action OptimizeImports<CR>
+
+" ========================================
+" LSP keymaps from lsp.lua
+" ========================================
+nmap gD :action GotoDeclaration<CR>
+nmap gd :action GotoDeclaration<CR>
+nmap K :action ShowHoverInfo<CR>
+nmap gi :action GotoImplementation<CR>
+nmap gr :action ShowUsages<CR>
+nmap [d :action GotoPreviousError<CR>
+nmap ]d :action GotoNextError<CR>
+
+" ========================================
+" File navigation (Telescope equivalents)
+" ========================================
+nmap <leader>ff :action GotoFile<CR>
+nmap <leader>fg :action FindInPath<CR>
+nmap <leader>fb :action RecentFiles<CR>
+nmap <leader>fr :action RecentFiles<CR>
+nmap <leader>fs :action FindWordAtCaret<CR>
+nmap <leader>f/ :action Find<CR>
+
+" Git file navigation
+nmap <leader>gf :action Git.Menu<CR>
+nmap <leader>gc :action Vcs.Show.Log<CR>
+nmap <leader>gb :action Git.Branches<CR>
+
+" ========================================
+" File explorer (NvimTree equivalents)
+" ========================================
+nmap <leader>e :action ActivateProjectToolWindow<CR>
+nmap <leader>o :action ActivateProjectToolWindow<CR>
+nmap <leader>E :action SelectInProjectView<CR>
+nmap <leader>O :action SelectInProjectView<CR>
+
+" ========================================
+" Terminal
+" ========================================
+nmap <leader>tf :action ActivateTerminalToolWindow<CR>
+nmap <leader>th :action Terminal.OpenInTerminal<CR>
+
+" ========================================
+" Additional useful IDE actions
+" ========================================
+
+" Search everywhere
+nmap <leader>/ :action SearchEverywhere<CR>
+
+" Code navigation
+nmap <C-o> :action Back<CR>
+nmap <C-i> :action Forward<CR>
+
+" Method navigation
+nmap [m :action MethodUp<CR>
+nmap ]m :action MethodDown<CR>
+
+" Error navigation
+nmap [e :action GotoPreviousError<CR>
+nmap ]e :action GotoNextError<CR>
+
+" Code folding
+nmap zc :action CollapseRegion<CR>
+nmap zo :action ExpandRegion<CR>
+nmap zM :action CollapseAllRegions<CR>
+nmap zR :action ExpandAllRegions<CR>
+
+" Run and debug
+nmap <leader>rr :action Run<CR>
+nmap <leader>rd :action Debug<CR>
+nmap <leader>rs :action Stop<CR>
+
+" Refactoring
+nmap <leader>re :action ExtractMethod<CR>
+nmap <leader>rv :action IntroduceVariable<CR>
+nmap <leader>rf :action IntroduceField<CR>
+nmap <leader>ri :action Inline<CR>
+
+" ========================================
+" Which-key style descriptions (comments for reference)
+" ========================================
+" <leader>f  - Find/Search
+" <leader>g  - Git
+" <leader>l  - LSP/Language
+" <leader>r  - Run/Refactor
+" <leader>c  - Code
+" <leader>o  - Organize
+" <leader>b  - Buffer
+" <leader>q  - Quit
+" <leader>t  - Terminal
+
+" ========================================
+" IdeaVim plugins (if you want to enable them)
+" ========================================
+" Uncomment the plugins you want to use:
+" set surround
+" set multiple-cursors
+" set commentary
+" set argtextobj
+" set textobj-entire
+" set ReplaceWithRegister
+" set exchange
+" set highlightedyank
+" set NERDTree
+
+" If you enable the surround plugin, it will work like nvim-surround
+" If you enable commentary, use gcc to comment line, gc to comment selection
